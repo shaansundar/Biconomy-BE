@@ -1,5 +1,9 @@
 const fs = require("fs");
 
+function main(){
+    
+}
+
 
 function exportAddresses(Contract1, Contract2){ //Pass in interface after deploying the contractFactory
     let addresses = {
