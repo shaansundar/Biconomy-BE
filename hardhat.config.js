@@ -1,4 +1,6 @@
 require('@nomiclabs/hardhat-waffle');
+require('@nomiclabs/hardhat-etherscan');
+
 const secret = require("./env/secrets.json");
 
 task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
@@ -42,12 +44,21 @@ module.exports = {
       }
     },
     mumbai:{
-      url: secret.MUMBAI_RPC,
-      accounts: [secret.PRIVATE_KEY]
+      url: `${secret.MUMBAI_RPC}`,
+      accounts
+    },
+    kovan:{
+      url: secret.KOVAN_RPC,
+      accounts
     },
     bsctestnet:{
       url: secret.BSCTESTNET_RPC,
       accounts: [secret.PRIVATE_KEY]
     }
-  }
+  },
+  etherscan: {
+    apiKey:{
+      polygonMumbai: `${secret.POLYGONSCAN_API}`,
+    }
+  },
 };

@@ -1,0 +1,11 @@
+<div class="w-screen p-4 h-20 flex items-center justify-between">
+    <h1 class="text-xl lg:text-4xl font-bold text-textPrimary">TimeLocked Contract</h1>
+    <button  (click)="this.walletService.connectWallet()" *ngIf="!this.walletService.isWalletConnected" class="w-40 h-full bg-fgPrimary transition-all hover:bg-opacity-80 text-white rounded-full">
+        Connect Wallet
+    </button>
+    <div *ngIf="this.walletService.isWalletConnected" class="text-fgPrimary cursor-pointer flex flex-col items-end justify-center h-full">
+        <h1 class="hidden lg:block text-sm mb-1">{{this.walletService.walletAddress}}</h1>
+        <h1 class="block lg:hidden text-sm mb-1">{{this.walletService.walletAddress.slice(0,7)+"..."+this.walletService.walletAddress.slice(-6,-1)}}</h1>
+        <h1 class="text-xs">Your MATIC Balance: {{this.walletService.slicedBalance}}</h1>
+    </div>
+</div>

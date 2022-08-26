@@ -1,0 +1,45 @@
+<div
+    class="flex p-4 lg:p-8 flex-col items-center justify-start w-[80vw] lg:w-[40vw] h-full lg:h-[75vh] bg-white rounded-3xl my-4">
+    <h1 class="text-2xl lg:text-4xl text-left w-full text-fgPrimary">Deposit</h1>
+    <div class="w-4/5 my-16 h-full flex flex-col items-center justify-start">
+        <div
+            class="w-full flex flex-row items-center justify-center bg-bgPrimary h-16 rounded-3xl px-4 text-2xl outline-none mb-8">
+            <input type="number" [(ngModel)]="depositValue" class="h-full w-full cursor-text bg-transparent outline-none" step="0.01" title="Enter Amount Here">
+            <div class="flex items-center justify-start">
+                <select name="Token" [(ngModel)]="chosenAsset" class="w-20 lg:w-20 text-lg bg-transparent text-right appearance-none outline-none" id="Token">
+                    <option class="shadow-lg" [value]="1">MATIC</option>
+                    <option class="shadow-lg" [value]="2">USDC</option>
+                </select>
+            </div>
+        </div>
+        <div class="w-full mb-8 flex flex-row items-center justify-between">
+            <button
+            (click)="approve()"
+                class="w-[45%] text-xl transition-all h-16 hover:shadow-md text-fgPrimary border-2 border-fgPrimary rounded-3xl ">✒️
+                Approve</button>
+            <button
+            (click)="deposit()"
+                class="w-[45%] text-xl transition-all h-16 hover:shadow-md hover:bg-opacity-90 bg-fgPrimary text-white rounded-3xl ">🏦
+                Deposit</button>
+        </div>
+        <div class="w-full p-2 h-60 bg-bgPrimary rounded-3xl flex flex-col items-center justify-start">
+            <h1 class="text-xl mb-2">Your Deposits</h1>
+            <div *ngIf="isLoading" class="text-6xl w-full h-full flex items-center justify-center animate-spin">
+                🙃
+            </div>
+            <div *ngIf="!isLoading"
+                class="w-full h-full flex items-center justify-center text-sm lg:text-base text-center">
+                <div class="w-1/2 flex flex-col items-center justify-center">
+                    <h1>MATIC DEPOSITS: {{EtherDepositData[0]}}</h1>
+                    <br>
+                    <h1>TIMELOCK: {{EtherDepositData[1]}}</h1>
+                </div>
+                <div class="w-1/2 flex flex-col items-center justify-center">
+                    <h1>USDC DEPOSITS: {{USDCDepositData[0]}} </h1>
+                    <br>
+                    <h1>TIMELOCK: {{USDCDepositData[1]}}</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,4 +1,7 @@
 import { Component } from '@angular/core';
+import { BiconomyService } from './services/biconomy.service';
+import { ContractService } from './services/contract.service';
+import { WalletService } from './services/wallet.service';
 
 @Component({
   selector: 'app-root',
@@ -6,5 +9,13 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'Angular-Ethers-Hardhat-Template';
+  title = 'TimeLocked Contract';
+  constructor(public walletService : WalletService, public contract : ContractService, 
+    // private biconomy: BiconomyService
+    ){}
+  async ngOnInit(): Promise<void> {
+    await this.walletService.connectWallet();
+    console.log(this.walletService.walletAddress)
+    this.walletService.walletAddress ? this.walletService.isWalletConnected=true : this.walletService.isWalletConnected=false
+  }
 }
