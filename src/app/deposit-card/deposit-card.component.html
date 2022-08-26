@@ -25,17 +25,17 @@
         <div class="w-full p-2 h-60 bg-bgPrimary rounded-3xl flex flex-col items-center justify-start">
             <h1 class="text-xl mb-2">Your Deposits</h1>
             <div *ngIf="isLoading" class="text-6xl w-full h-full flex items-center justify-center animate-spin">
-                🙃
+            💸
             </div>
             <div *ngIf="!isLoading"
                 class="w-full h-full flex items-center justify-center text-sm lg:text-base text-center">
                 <div class="w-1/2 flex flex-col items-center justify-center">
-                    <h1>MATIC DEPOSITS: {{EtherDepositData[0]}}</h1>
+                    <h1>MATIC DEPOSITS: {{formatEther(EtherDepositData[0])}}</h1>
                     <br>
                     <h1>TIMELOCK: {{EtherDepositData[1]}}</h1>
                 </div>
                 <div class="w-1/2 flex flex-col items-center justify-center">
-                    <h1>USDC DEPOSITS: {{USDCDepositData[0]}} </h1>
+                    <h1>USDC DEPOSITS: {{formatEther(USDCDepositData[0])}} </h1>
                     <br>
                     <h1>TIMELOCK: {{USDCDepositData[1]}}</h1>
                 </div>
