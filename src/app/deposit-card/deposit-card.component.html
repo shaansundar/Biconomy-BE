@@ -6,7 +6,7 @@
             class="w-full flex flex-row items-center justify-center bg-bgPrimary h-16 rounded-3xl px-4 text-2xl outline-none mb-8">
             <input type="number" [(ngModel)]="depositValue" class="h-full w-full cursor-text bg-transparent outline-none" step="0.01" title="Enter Amount Here">
             <div class="flex items-center justify-start">
-                <select name="Token" [(ngModel)]="chosenAsset" class="w-20 lg:w-20 text-lg bg-transparent text-right appearance-none outline-none" id="Token">
+                <select name="Token" [(ngModel)]="chosenAsset" class="w-20 bg-fgSecondary transition-all rounded-3xl hover:bg-fgPrimary hover:text-white lg:w-20 text-lg bg-transparent text-center text-fgPrimary appearance-none outline-none" id="Token">
                     <option class="shadow-lg" [value]="1">MATIC</option>
                     <option class="shadow-lg" [value]="2">USDC</option>
                 </select>
