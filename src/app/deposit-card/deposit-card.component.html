@@ -30,14 +30,16 @@
             <div *ngIf="!isLoading"
                 class="w-full h-full flex items-center justify-center text-sm lg:text-base text-center">
                 <div class="w-1/2 flex flex-col items-center justify-center">
-                    <h1>MATIC DEPOSITS: {{formatEther(EtherDepositData[0])}}</h1>
+                    <img class="h-20 w-20" src="../../assets/polygon-matic-coin.png" alt="" srcset="">
                     <br>
+                    <h1>MATIC DEPOSITS: {{formatEther(EtherDepositData[0])}}</h1>
                     <h1 *ngIf="EtherCountdown > 0" >TIMELOCK: {{EtherCountdown}} Seconds to go!</h1>
                     <h1 class="text-fgPrimary font-bold" *ngIf="EtherCountdown <= 0" >TIMELOCK: Unlocked!</h1>
                 </div>
                 <div class="w-1/2 flex flex-col items-center justify-center">
-                    <h1>USDC DEPOSITS: {{formatEther(USDCDepositData[0])}} </h1>
+                    <img class="h-20 w-20" src="../../assets/usd-coin-4925930-4102016.webp" alt="" srcset="">
                     <br>
+                    <h1>USDC DEPOSITS: {{formatEther(USDCDepositData[0])}} </h1>
                     <h1 *ngIf="USDCCountdown > 0" >TIMELOCK: {{USDCCountdown}} Seconds to go!</h1>
                     <h1 class="text-fgPrimary font-bold" *ngIf="USDCCountdown <= 0" >TIMELOCK: Unlocked!</h1>
                 </div>
