@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { BigNumber } from 'ethers';
 import { ethers } from 'ethers';
+import { Subscription, interval } from 'rxjs';
 import { ContractService } from '../services/contract.service';
 import { WalletService } from '../services/wallet.service';
 
@@ -10,6 +11,9 @@ import { WalletService } from '../services/wallet.service';
   styleUrls: ['./deposit-card.component.css'],
 })
 export class DepositCardComponent implements OnInit {
+  public subscription: Subscription | any;
+  public USDCCountdown: any;
+  public EtherCountdown: any;
   public contractInstance: any;
   public erc20Instance: any;
   public isLoading: boolean = true;
@@ -26,6 +30,24 @@ export class DepositCardComponent implements OnInit {
     this.contractInstance = instances[0];
     this.erc20Instance = instances[1];
     this.getUserStats();
+    this.subscription = interval(1000).subscribe((x) => {
+      this.getTimeDifference();
+    });
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+  }
+
+  private getTimeDifference() {
+    let usdcDiff = this.USDCDepositData[1] * 1000 - new Date().getTime();
+    let ethDiff = this.EtherDepositData[1] * 1000 - new Date().getTime();
+    this.USDCCountdown = this.allocateTimeUnits(usdcDiff > 0 ? usdcDiff : 0);
+    this.EtherCountdown = this.allocateTimeUnits(ethDiff > 0 ? ethDiff : 0);
+  }
+
+  private allocateTimeUnits(timeDifference: any) {
+    return Math.floor((timeDifference / 1000) % 60);
   }
 
   public formatEther(e: string) {
@@ -57,7 +79,7 @@ export class DepositCardComponent implements OnInit {
   }
 
   async deposit() {
-    this.isLoading = true
+    this.isLoading = true;
     if (this.chosenAsset == '1') {
       let tx = await this.contractInstance.depositEther({
         value: ethers.utils.parseEther(`${this.depositValue}`),

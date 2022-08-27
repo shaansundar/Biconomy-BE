@@ -32,12 +32,14 @@
                 <div class="w-1/2 flex flex-col items-center justify-center">
                     <h1>MATIC DEPOSITS: {{formatEther(EtherDepositData[0])}}</h1>
                     <br>
-                    <h1>TIMELOCK: {{EtherDepositData[1]}}</h1>
+                    <h1 *ngIf="EtherCountdown > 0" >TIMELOCK: {{EtherCountdown}} Seconds to go!</h1>
+                    <h1 class="text-fgPrimary font-bold" *ngIf="EtherCountdown <= 0" >TIMELOCK: Unlocked!</h1>
                 </div>
                 <div class="w-1/2 flex flex-col items-center justify-center">
                     <h1>USDC DEPOSITS: {{formatEther(USDCDepositData[0])}} </h1>
                     <br>
-                    <h1>TIMELOCK: {{USDCDepositData[1]}}</h1>
+                    <h1 *ngIf="USDCCountdown > 0" >TIMELOCK: {{USDCCountdown}} Seconds to go!</h1>
+                    <h1 class="text-fgPrimary font-bold" *ngIf="USDCCountdown <= 0" >TIMELOCK: Unlocked!</h1>
                 </div>
             </div>
         </div>
