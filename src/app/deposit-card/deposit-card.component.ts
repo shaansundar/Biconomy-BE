@@ -25,7 +25,7 @@ export class DepositCardComponent implements OnInit {
   constructor(public contract: ContractService, public wallet: WalletService) {}
 
   async ngOnInit(): Promise<void> {
-    await new Promise((f) => setTimeout(f, 1000));
+    await new Promise((f) => setTimeout(f, 3000));
     let instances: any = await this.contract.getContract();
     this.contractInstance = instances[0];
     this.erc20Instance = instances[1];
