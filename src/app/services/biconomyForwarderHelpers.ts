@@ -1,5 +1,6 @@
 import {ethers} from 'ethers';
-import abi from "ethereumjs-abi";
+// import abi from "ethereumjs-abi";
+// const abi = require('ethereumjs-abi')
 
 let helperAttributes: any = {};
 let supportedNetworks = [42,4,5]; //add more
@@ -41,7 +42,7 @@ const getContractAddresses = async (networkId: any) => {
     }/api/v2/meta-tx/systemInfo?networkId=${networkId}`;
     const response = await fetch(apiInfo);
     const systemInfo = await response.json();
-    console.log("Response JSON " + JSON.stringify(systemInfo));
+    // console.log("Response JSON " + JSON.stringify(systemInfo));
     contractAddresses.biconomyForwarderAddress = systemInfo.biconomyForwarderAddress;
     return contractAddresses;
   };
@@ -108,35 +109,35 @@ const getDataToSignForEIP712 = async (request:any,networkId:any) => {
     return dataToSign;
 }
 
-/**
- * pass your forward request
- * use this method to build message to be signed by end user in personal signature format 
- * @param {*} networkId 
- */
-const getDataToSignForPersonalSign = (request:any) => {
-    const hashToSign = abi.soliditySHA3([
-        "address",
-        "address",
-        "address",
-        "uint256",
-        "uint256",
-        "uint256",
-        "uint256",
-        "uint256",
-        "bytes32",
-    ], [
-        request.from,
-        request.to,
-        request.token,
-        request.txGas,
-        request.tokenGasPrice,
-        request.batchId,
-        request.batchNonce,
-        request.deadline,
-        ethers.utils.keccak256(request.data),
-    ]);
-    return hashToSign;
-}
+// /**
+//  * pass your forward request
+//  * use this method to build message to be signed by end user in personal signature format 
+//  * @param {*} networkId 
+//  */
+// const getDataToSignForPersonalSign = (request:any) => {
+//     const hashToSign = abi.soliditySHA3([
+//         "address",
+//         "address",
+//         "address",
+//         "uint256",
+//         "uint256",
+//         "uint256",
+//         "uint256",
+//         "uint256",
+//         "bytes32",
+//     ], [
+//         request.from,
+//         request.to,
+//         request.token,
+//         request.txGas,
+//         request.tokenGasPrice,
+//         request.batchId,
+//         request.batchNonce,
+//         request.deadline,
+//         ethers.utils.keccak256(request.data),
+//     ]);
+//     return hashToSign;
+// }
 
 /**
  * get the domain seperator that needs to be passed while using EIP712 signature type
@@ -168,7 +169,7 @@ const getDomainSeperator = async (networkId:any) => {
 export {
     helperAttributes,
     getDomainSeperator,
-    getDataToSignForPersonalSign,
+    // getDataToSignForPersonalSign,
     getDataToSignForEIP712,
     buildForwardTxRequest,
     getBiconomyForwarderConfig

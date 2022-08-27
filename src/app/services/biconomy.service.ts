@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Console } from 'console';
 import { ethers } from 'ethers';
 import TimeLock from '../../../blockchain/artifacts/blockchain/contracts/TimeLock.sol/TimeLock.json';
 import addresses from '../../../env/contractAddress.json';
@@ -6,10 +7,6 @@ import secrets from '../../../env/secrets.json';
 declare const window: any;
 
 import {
-  helperAttributes,
-  getDomainSeperator,
-  getDataToSignForPersonalSign,
-  getDataToSignForEIP712,
   buildForwardTxRequest,
   getBiconomyForwarderConfig,
 } from './biconomyForwarderHelpers';
@@ -22,70 +19,8 @@ import { WalletService } from './wallet.service';
 export class BiconomyService {
   public BiconomyObject: any;
   public BiconomyTimeLockInterface: any;
-  public walletProvider: any;
-  walletSigner: any;
   constructor(private walletInterface: WalletService, private contract: ContractService) {
-    // this.initBiconomy();
-    this.walletProvider = walletInterface.provider;
-    this.walletSigner = walletInterface.signer;
   }
-
-  // async postTx(
-  //   voucher: any,
-  //   contract: any,
-  //   networkId: string,
-  //   fromAddress: string,
-  //   apiId: string,
-  //   params: any,
-  //   toContractAddress: string
-  // ) {
-  //   let userAddress: string = this.walletInterface.walletAddress;
-  //   let contractInterface = new ethers.utils.Interface(TimeLock.abi);
-  //   let functionSignature = contractInterface.encodeFunctionData(
-  //     'withdrawWithVoucher',
-  //     [voucher]
-  //   );
-  //   let gasPrice = await this.walletProvider.getGasPrice();
-  //   let gasLimit = await this.walletProvider.estimateGas({
-  //     to: contract.address,
-  //     from: userAddress,
-  //     data: functionSignature,
-  //   });
-  //   let forwarder = await getBiconomyForwarderConfig(networkId);
-  //   let forwarderContract = new ethers.Contract(
-  //     forwarder.address,
-  //     forwarder.abi,
-  //     this.walletSigner
-  //   );
-  //   const batchNonce = await forwarderContract.getNonce(userAddress, 0);
-  //   const batchId = await forwarderContract.getBatch(userAddress);
-  //   const to = contract.address;
-  //   const gasLimitNum = Number(gasLimit.toNumber().toString());
-  //   const request = await buildForwardTxRequest({
-  //     account: userAddress,
-  //     to,
-  //     gasLimitNum,
-  //     batchId,
-  //     batchNonce,
-  //     data,
-  //   });
-
-  //   /* If you wish to use EIP712 Signature type */
-  //   const domainSeparator = getDomainSeperator(networkId);
-  //   const dataToSign = await getDataToSignForEIP712(request, networkId);
-
-  //   let sig;
-  //   // get the user's signature
-  //   this.walletProvider
-  //     .send('eth_signTypedData_v3', [userAddress, dataToSign])
-  //     .then(function (sig:any) {
-  //       console.log(sig);
-  //     })
-  //     .catch(function (error:any) {
-  //       console.log(error);
-  //     });
-  // }
-
   async sendTransaction(
     voucher:any,
     contractAddress:any,
@@ -98,17 +33,19 @@ export class BiconomyService {
     let forwarderContract = new ethers.Contract(
       forwarder.address,
       forwarder.abi,
-      this.walletSigner
-    );
+      this.walletInterface.signer
+      );
     const batchNonce = await forwarderContract.getNonce(userAddress,0);
     const batchId = await forwarderContract.getBatch(userAddress);
-    let contractInterface = await this.contract.getContract()
+    // const batchId = 0
+    let contractInterface:any = new ethers.utils.Interface(TimeLock.abi)
     let functionSignature = contractInterface[0].encodeFunctionData("withdrawWithVoucher", [voucher]);
-    let gasLimit = await this.walletProvider.estimateGas({
+    let gasLimit = await this.walletInterface.provider.estimateGas({
       to: contractAddress,
       from: userAddress,
       data: functionSignature
     });
+    console.log("REACHED")
     const request = await buildForwardTxRequest({account:userAddress,contractAddress,gasLimit,batchId,batchNonce,voucher});
     if (domainSeparator) {
       params = [request, domainSeparator, sig];
@@ -116,6 +53,7 @@ export class BiconomyService {
       params = [request, sig];
     }
     try {
+      console.log(contractAddress,'9e2644f3-1213-49a4-8bd0-38e3ba4b87b1',params,userAddress)
       fetch(`https://api.biconomy.io/api/v2/meta-tx/native`, {
         method: 'POST',
         headers: {
