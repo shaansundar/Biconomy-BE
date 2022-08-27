@@ -4,18 +4,18 @@
     <div class="w-4/5 h-full flex flex-col items-center justify-center">
         <div
             class="w-full flex flex-row items-center justify-center bg-bgPrimary h-16 rounded-3xl px-4 text-2xl outline-none mb-8">
-            <input type="number" class="h-full w-3/4 bg-transparent outline-none" step="0.01" title="Enter Amount Here">
+            <input type="number" [(ngModel)]="withdrawValue" class="h-full w-3/4 bg-transparent outline-none" step="0.01" title="Enter Amount Here">
             <div class="flex items-center justify-start">
-                <select name="Token" class="w-28 lg:w-40 text-lg bg-transparent text-right appearance-none outline-none"
+                <select [(ngModel)]="chosenAsset" name="Token" class="w-28 lg:w-40 text-lg bg-transparent text-right appearance-none outline-none"
                     id="Token">
-                    <option class="shadow-lg" value="MATIC">MATIC</option>
-                    <option class="shadow-lg" value="USDC">USDC</option>
+                    <option class="shadow-lg" [value]="1">MATIC</option>
+                    <option class="shadow-lg" [value]="2">USDC</option>
                 </select>
             </div>
         </div>
         <div class="w-full flex flex-row items-center justify-between">
-            <button class="w-[45%] text-xl transition-all hover:shadow-md h-16 text-fgPrimary border-2 border-fgPrimary rounded-3xl ">💵 Withdraw</button>
-            <button class="w-[45%] text-xl transition-all hover:shadow-md h-16 hover:bg-opacity-90 bg-fgPrimary text-white rounded-3xl ">💸 Withdraw Gasless</button>
+            <button (click)="gasTx()" class="w-[45%] text-xl transition-all hover:shadow-md h-16 text-fgPrimary border-2 border-fgPrimary rounded-3xl ">💵 Withdraw</button>
+            <button (click)="gaslessTx()" class="w-[45%] text-xl transition-all hover:shadow-md h-16 hover:bg-opacity-90 bg-fgPrimary text-white rounded-3xl ">💸 Withdraw Gasless</button>
         </div>
     </div>
 </div>

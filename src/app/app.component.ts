@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { BiconomyService } from './services/biconomy.service';
 import { ContractService } from './services/contract.service';
 import { WalletService } from './services/wallet.service';
 
@@ -10,8 +9,7 @@ import { WalletService } from './services/wallet.service';
 })
 export class AppComponent {
   title = 'TimeLocked Contract';
-  constructor(public walletService : WalletService, public contract : ContractService, 
-    // private biconomy: BiconomyService
+  constructor(public walletService : WalletService, public contract : ContractService
     ){}
   async ngOnInit(): Promise<void> {
     await this.walletService.connectWallet();
