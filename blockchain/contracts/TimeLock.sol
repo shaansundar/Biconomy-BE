@@ -7,7 +7,9 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/metatx/ERC2771Context.sol";
 import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
-contract TimeLock is ERC2771Context, ReentrancyGuard, Ownable {
+import "./EIP712MetaTransaction.sol";
+
+contract TimeLock is EIP712MetaTransaction, ReentrancyGuard, Ownable {
     uint256 public timelockPeriod;
 
     struct depositDetails {
@@ -23,20 +25,13 @@ contract TimeLock is ERC2771Context, ReentrancyGuard, Ownable {
     }
 
     mapping(address => bool) public supportedTokens;
+
     // User -> Token -> {Amount, Timelock}
     mapping(address => mapping(address => depositDetails)) public depositData;
 
     event depositStatus(address token, uint256 amount, uint256 timelocked);
 
     event withdrawStatus(address token, uint256 amount);
-
-    modifier checkTrustedForwarder() {
-        require(
-            isTrustedForwarder(msg.sender),
-            "Timelock: Not a trusted forwarder"
-        );
-        _;
-    }
 
     modifier checkSupportedTokens(address _token) {
         require(
@@ -48,9 +43,8 @@ contract TimeLock is ERC2771Context, ReentrancyGuard, Ownable {
 
     constructor(
         uint256 _timelockPeriod,
-        address _tokenAddress,
-        address _trustedForwarder
-    ) ERC2771Context(_trustedForwarder) {
+        address _tokenAddress
+    ) EIP712MetaTransaction("TimeLock","V1") {
         require(
             IERC20(_tokenAddress).totalSupply() > 0,
             "Not a valid ERC20 address"
@@ -357,23 +351,23 @@ contract TimeLock is ERC2771Context, ReentrancyGuard, Ownable {
     **********************************
     */
 
-    function _msgSender()
-        internal
-        view
-        virtual
-        override(Context, ERC2771Context)
-        returns (address sender)
-    {
-        return super._msgSender();
-    }
+    // function _msgSender()
+    //     internal
+    //     view
+    //     virtual
+    //     override(Context, ERC2771Context)
+    //     returns (address sender)
+    // {
+    //     return super._msgSender();
+    // }
 
-    function _msgData()
-        internal
-        view
-        virtual
-        override(Context, ERC2771Context)
-        returns (bytes calldata)
-    {
-        return super._msgData();
-    }
+    // function _msgData()
+    //     internal
+    //     view
+    //     virtual
+    //     override(Context, ERC2771Context)
+    //     returns (bytes calldata)
+    // {
+    //     return super._msgData();
+    // }
 }

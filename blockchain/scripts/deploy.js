@@ -17,7 +17,6 @@ async function main() {
   let deployedContract = await contractFactoryPool.deploy(
     TIMELOCK_PERIOD,
     ERC20_ADDRESS,
-    TRUSTED_FORWARDER_ADDRESS,
     {
         gasLimit: 1000000,
     }
