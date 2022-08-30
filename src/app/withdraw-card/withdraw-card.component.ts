@@ -34,13 +34,11 @@ export class WithdrawCardComponent implements OnInit {
       ethers.utils.arrayify(hashedVoucher)
     );
     let newVoucher = { ...voucher, signature: userSignature };
-    await this.biconomyAPI.sendTransaction(
-      newVoucher,
-      addresses.TimeLock,
-      this.wallet.walletAddress,
-      userSignature,
-      false
-    );
+    
+    // alert("Work In Progress")
+    // Uncomment the next line:
+    
+    await this.biconomyAPI.sendTransaction(newVoucher);
     window.location.reload();
   }
 

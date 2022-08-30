@@ -14,7 +14,7 @@ export class ContractService {
 
   async getContract() {
     this.TimeLockInterface = new ethers.Contract(
-      addresses.TimeLock,
+      addresses.TimeLockV2,
       TimeLock.abi,
       this.walletService.signer
     );

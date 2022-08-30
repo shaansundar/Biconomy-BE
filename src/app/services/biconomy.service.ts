@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Biconomy } from '@biconomy/mexa';
 import { Console } from 'console';
 import { ethers } from 'ethers';
 import TimeLock from '../../../blockchain/artifacts/blockchain/contracts/TimeLock.sol/TimeLock.json';
@@ -13,84 +14,126 @@ import {
 import { ContractService } from './contract.service';
 import { WalletService } from './wallet.service';
 
+const domainType = [
+  { name: 'name', type: 'string' },
+  { name: 'version', type: 'string' },
+  { name: 'verifyingContract', type: 'address' },
+  { name: 'salt', type: 'bytes32' },
+];
+const metaTransactionType = [
+  { name: 'nonce', type: 'uint256' },
+  { name: 'from', type: 'address' },
+  { name: 'functionSignature', type: 'bytes' },
+];
+
 @Injectable({
   providedIn: 'root',
 })
 export class BiconomyService {
   public BiconomyObject: any;
   public BiconomyTimeLockInterface: any;
-  constructor(private walletInterface: WalletService, private contract: ContractService) {
-  }
-  async sendTransaction(
-    voucher:any,
-    contractAddress:any,
-    userAddress:any,
-    sig:any,
-    domainSeparator:any
+  public domainData = {
+    name: 'TimeLock',
+    version: 'V1',
+    verifyingContract: addresses.TimeLockV2,
+    salt: '0x' + (42).toString(16).padStart(64, '0'),
+  };
+  constructor(
+    private walletInterface: WalletService,
+    private contract: ContractService
   ) {
-    let params;
-    let forwarder = await getBiconomyForwarderConfig(80001);
-    let forwarderContract = new ethers.Contract(
-      forwarder.address,
-      forwarder.abi,
-      this.walletInterface.signer
-      );
-    const batchNonce = await forwarderContract.getNonce(userAddress,0);
-    const batchId = await forwarderContract.getBatch(userAddress);
-    // const batchId = 0
-    let contractInterface:any = new ethers.utils.Interface(TimeLock.abi)
-    let functionSignature = contractInterface[0].encodeFunctionData("withdrawWithVoucher", [voucher]);
-    let gasLimit = await this.walletInterface.provider.estimateGas({
-      to: contractAddress,
-      from: userAddress,
-      data: functionSignature
-    });
-    console.log("REACHED")
-    const request = await buildForwardTxRequest({account:userAddress,contractAddress,gasLimit,batchId,batchNonce,voucher});
-    if (domainSeparator) {
-      params = [request, domainSeparator, sig];
-    } else {
-      params = [request, sig];
-    }
+    //Uncomment the next 2 lines to use SDK instead
+    this.initBiconomy();
+  }
+
+  async sendTransaction(voucher: any) {
+    let contracts = await this.contract.getContract();
+    let contractInstance = contracts[0];
+
+    let userAddress = this.walletInterface.walletAddress;
+    let ethersProvider = this.walletInterface.provider;
+
+    let nonce = await contractInstance.getNonce(userAddress);
+    const contractInterface = new ethers.utils.Interface(TimeLock.abi);
+    console.log(contractInterface);
+    let functionSignature;
     try {
-      console.log(contractAddress,'9e2644f3-1213-49a4-8bd0-38e3ba4b87b1',params,userAddress)
-      fetch(`https://api.biconomy.io/api/v2/meta-tx/native`, {
-        method: 'POST',
-        headers: {
-          'x-api-key': secrets.BICONOMY_SDK_API,
-          'Content-Type': 'application/json;charset=utf-8',
-        },
-        body: JSON.stringify({
-          to: contractAddress,
-          apiId: '9e2644f3-1213-49a4-8bd0-38e3ba4b87b1',
-          params: params,
-          from: userAddress,
-        }),
-      })
-        .then((response) => response.json())
-        .then(async function (result) {
-          console.log(result);
-          console.log(`Transaction sent by relayer with hash ${result.txHash}`);
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
+      functionSignature = contractInterface.encodeFunctionData(
+        'withdrawWithVoucher',
+        [voucher]
+      );
+    } catch (e) {
+      console.log(e);
+    }
+    let message = {
+      nonce: parseInt(nonce),
+      from: userAddress,
+      functionSignature: functionSignature,
+    };
+    let dataToSign = JSON.stringify({
+      types: {
+        EIP712Domain: domainType,
+        MetaTransaction: metaTransactionType,
+      },
+      domain: this.domainData,
+      primaryType: 'MetaTransaction',
+      message: message,
+    });
+
+    let signature = await ethersProvider.send('eth_signTypedData_v3', [
+      userAddress,
+      dataToSign,
+    ]);
+
+    if (!ethers.utils.isHexString(signature)) {
+      throw new Error(
+        'Given value "'.concat(signature, '" is not a valid hex string.')
+      );
+    }
+    const r = signature.slice(0, 66);
+    const s = '0x'.concat(signature.slice(66, 130));
+    let v = '0x'.concat(signature.slice(130, 132));
+    v = ethers.BigNumber.from(v).toString();
+    if (![27, 28].includes(Number(v))) v += 27;
+
+    const provider = await this.BiconomyObject.provider;
+    let { data } =
+      await contractInstance.populateTransaction.executeMetaTransaction(
+        userAddress,
+        functionSignature,
+        r,
+        s,
+        v
+      );
+
+    let txParams = {
+      data: data,
+      to: addresses.TimeLockV2,
+      from: userAddress,
+      signatureType: 'EIP712_SIGN',
+    };
+
+    try {
+      let Tx = await this.BiconomyObject.biconomyForwarder.provider.send('eth_sendTransaction', [txParams]);
+      alert(Tx)
     } catch (error) {
-      console.log(error);
+      alert(error);
     }
   }
 
-  // async initBiconomy(){
-  //   this.BiconomyObject = new Biconomy(window.ethereum, {
-  //     apiKey: secrets.BICONOMY_SDK_API,
-  //     debug: true,
-  //     contractAddresses: [addresses.TimeLock], // list of contract address you want to enable gasless on
-  //   });
-  //   this.BiconomyTimeLockInterface = new ethers.Contract(
-  //     addresses.TimeLock,
-  //     TimeLock.abi,
-  //     this.BiconomyObject.ethersProvider
-  //   );
-  //   console.log(this.BiconomyTimeLockInterface)
-  // }
+  async initBiconomy() {
+    this.BiconomyObject = new Biconomy(window.ethereum, {
+      apiKey: secrets.BICONOMY_SDK_API,
+      debug: true,
+      contractAddresses: [addresses.TimeLockV2], // list of contract address you want to enable gasless on
+    });
+    this.BiconomyTimeLockInterface = new ethers.Contract(
+      addresses.TimeLockV2,
+      TimeLock.abi,
+      this.BiconomyObject.ethersProvider
+    );
+    await this.BiconomyObject.init();
+    console.log(this.BiconomyObject);
+    console.log(this.BiconomyObject.provider);
+  }
 }

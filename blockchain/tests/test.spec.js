@@ -22,8 +22,7 @@ describe("Unit Test: Time-Lock Contract:", async () => {
     contractFactory = await ethers.getContractFactory("TimeLock");
     deployedContract = await contractFactory.deploy(
       TIMELOCK_PERIOD,
-      testERC20.address,
-      await trustedForwarder.getAddress()
+      testERC20.address
     );
   });
 
