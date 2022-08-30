@@ -35,10 +35,10 @@ export class WithdrawCardComponent implements OnInit {
     );
     let newVoucher = { ...voucher, signature: userSignature };
     
-    alert("Work In Progress")
-    //Uncomment the next line:
+    // alert("Work In Progress")
+    // Uncomment the next line:
     
-    // this.biconomyAPI.BiconomyTimeLockInterface.withdrawWithVoucher(newVoucher);
+    await this.biconomyAPI.sendTransaction(newVoucher);
     window.location.reload();
   }
 

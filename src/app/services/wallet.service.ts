@@ -15,7 +15,7 @@ export class WalletService {
   public isWalletConnected: boolean = false;
 
   public USDCAddress: String = addresses.USDC_MATIC
-  public ContractAddress: String = addresses.TimeLock
+  public ContractAddress: String = addresses.TimeLockV2
 
   constructor() {}
   public async connectWallet() {

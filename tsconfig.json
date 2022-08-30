@@ -17,6 +17,18 @@
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "importHelpers": true,
+    "paths":{
+      "crypto": ["./node_modules/crypto-browserify"],
+      "stream": ["./node_modules/stream-browserify"],
+      "buffer": ["./node_modules/buffer"],
+      "assert": ["./node_modules/assert"],
+      "http": ["./node_modules/stream-http"],
+      "https": ["./node_modules/https-browserify"],
+      "fs": ["./node_modules/fs"],
+      "os": ["./node_modules/os-browserify"],
+      "zlib": ["./node_modules/browserify-zlib"],
+      "path": ["./node_modules/path-browserify"]
+    },
     "target": "es2017",
     "module": "es2020",
     "types": [
